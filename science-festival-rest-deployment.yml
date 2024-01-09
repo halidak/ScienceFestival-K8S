@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: science-festival-rest-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sciencefestivalrest
+  template:
+    metadata:
+      labels:
+        app: sciencefestivalrest
+    spec:
+      containers:
+        - name: sciencefestivalrest
+          image: halidak/sciencefestivalrest:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server=sql-server-service,1433;User Id=sa;Password=Admin123!;TrustServerCertificate=True;"
+      initContainers:
+        - name: check-sql-server
+          image: busybox:1.36.1
+          command: ['sh', '-c', 'until nc -z -v -w30 sql-server-service 1433; do echo waiting for sql-server-service; sleep 2; done;']

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: science-festival-go-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: science-festival-go
+  template:
+    metadata:
+      labels:
+        app: science-festival-go
+    spec:
+      containers:
+        - name: science-festival-go
+          image: halidak/sciencefestivalgo:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            - name: GIN_MODE
+              value: "release"
+            - name: MONGODB_CONNECTION_STRING
+              value: "mongodb://mongodb-service:27017"
+            - name: RABBITMQ_CONNECTION_STRING
+              value: "amqp://guest:guest@rabbitmq-service:5672"
+      initContainers:
+        - name: check-mongodb
+          image: busybox:1.36.1
+          command: ['sh', '-c', 'until nc -z -v -w30 mongodb-service 27017; do echo waiting for mongodb-service; sleep 2; done;']
+        - name: check-rabbitmq
+          image: busybox:1.36.1
+          command: ['sh', '-c', 'until nc -z -v -w30 rabbitmq-service 5672; do echo waiting for rabbitmq-service; sleep 2; done;']
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: science-festival-go-service
+spec:
+  selector:
+    app: science-festival-go
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: NodePort

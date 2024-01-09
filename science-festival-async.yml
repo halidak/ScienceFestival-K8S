@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: science-festival-async-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: science-festival-async
+  template:
+    metadata:
+      labels:
+        app: science-festival-async
+    spec:
+      containers:
+        - name: science-festival-async
+          image: halidak/sfasync:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server=sql-server-service,1433;User Id=sa;Password=Admin123!;TrustServerCertificate=True;"
+            - name: MessageBroker__HostName
+              value: "rabbitmq-service"
+            - name: MessageBroker__Port
+              value: "5672"
+            - name: MessageBroker__UserName
+              value: "guest"
+            - name: MessageBroker__Password
+              value: "guest"
+      initContainers:
+        - name: check-sql-server
+          image: busybox:1.36.1
+          command: ['sh', '-c', 'until nc -z -v -w30 sql-server-service 1433; do echo waiting for sql-server-service; sleep 2; done;']
+        - name: check-rabbitmq
+          image: busybox:1.36.1
+          command: ['sh', '-c', 'until nc -z -v -w30 rabbitmq-service 5672; do echo waiting for rabbitmq-service; sleep 2; done;']
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: science-festival-async-service
+spec:
+  selector:
+    app: science-festival-async
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
