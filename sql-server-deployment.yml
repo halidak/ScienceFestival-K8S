@@ -28,4 +28,3 @@ spec:
       volumes:
         - name: sql-server-storage
           emptyDir: {}
-
