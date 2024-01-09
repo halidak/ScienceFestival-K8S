@@ -28,3 +28,16 @@ spec:
       volumes:
         - name: sql-server-storage
           emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql-server-service
+spec:
+  selector:
+    app: sql-server
+  ports:
+    - protocol: TCP
+      port: 1433
+      
