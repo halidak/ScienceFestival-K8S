@@ -23,7 +23,7 @@ spec:
       volumes:
         - name: mongodb-storage
           persistentVolumeClaim:
-            claimName: mongodb-pv-claim
+            claimName: mongodb-pvc
 ---
 apiVersion: v1
 kind: Service
