@@ -22,8 +22,8 @@ spec:
               mountPath: /data/db
       volumes:
         - name: mongodb-storage
-          persistentVolumeClaim:
-            claimName: mongodb-pvc
+          hostPath:
+            path: /storage/shows-mongodb
 ---
 apiVersion: v1
 kind: Service
