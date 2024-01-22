@@ -15,7 +15,6 @@ spec:
       containers:
         - name: science-festival-async
           image: halidak/sfasync:latest
-          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:

@@ -15,7 +15,6 @@ spec:
       containers:
         - name: api-gateway
           image: halidak/apigateway:latest
-          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:

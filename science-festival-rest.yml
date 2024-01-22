@@ -15,7 +15,6 @@ spec:
       containers:
         - name: sciencefestivalrest
           image: halidak/sciencefestivalrest:latest
-          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:
